@@ -73,3 +73,41 @@ INNER JOIN fournisseurs ON lienarbresfournisseurs.FK_Fournisseurs = fournisseurs
 INNER JOIN arbres ON lienarbresfournisseurs.FK_ARBRE = arbres.PK_ARBRE
 WHERE arbres.NomArbre = 'Chênes'
 GROUP BY fournisseurs.PK_Fournisseur, fournisseurs.Nom;
+
+
+-- =====================================
+-- REQUETE AVANCEE
+-- Nb fournisseurs + stock total + stock BE / FR
+-- =====================================
+
+SELECT 
+    a.NomArbre,
+    COUNT(DISTINCT f.PK_Fournisseur) AS nb_fournisseurs,
+    SUM(l.Nb) AS stock_total,
+
+    SUM(CASE 
+        WHEN p.PK_Pays = 'BE' THEN l.Nb 
+        ELSE 0 
+    END) AS stock_BE,
+
+    SUM(CASE 
+        WHEN p.PK_Pays = 'FR' THEN l.Nb 
+        ELSE 0 
+    END) AS stock_FR
+
+FROM lienarbresfournisseurs l
+
+JOIN arbres a 
+    ON l.FK_Arbre = a.PK_Arbre
+
+JOIN fournisseurs f 
+    ON l.FK_Fournisseurs = f.PK_Fournisseur
+
+JOIN pays p 
+    ON f.Cpays = p.PK_Pays
+
+WHERE l.PrixHtva > 10
+
+GROUP BY a.NomArbre
+
+HAVING COUNT(DISTINCT f.PK_Fournisseur) > 2;
