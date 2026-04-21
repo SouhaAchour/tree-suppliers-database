@@ -1,0 +1,17 @@
+DELIMITER $$
+
+CREATE FUNCTION PaysNom(code CHAR(2))
+RETURNS VARCHAR(50)
+READS SQL DATA
+BEGIN
+    DECLARE nom VARCHAR(50);
+
+    SELECT NomPays INTO nom
+    FROM pays
+    WHERE PK_Pays = code;
+
+    RETURN nom;
+END $$
+
+DELIMITER ;
+SELECT PaysNom('BE');
